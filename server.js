@@ -32,7 +32,7 @@ app.post('/signup',async (req , res) => {
     try {
     let result = await db.query(query , values) 
     if(result.rows?.length){
-        res.status(400).send({message: "User alreay Exits"})
+        res.status(400).send({message: "User alreay Exits With This Email"})
         return
     }
     let addQurey = db.query("INSERT INTO users(first_name, last_name, email, password) VALUES($1, $2, $3, $4)")

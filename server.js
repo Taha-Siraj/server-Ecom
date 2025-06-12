@@ -31,7 +31,7 @@ app.post('/signup',async (req , res) => {
     let values = [email]
     try {
     let result = await db.query(query , values) 
-    if(result.rows.length){
+    if(result.rows?.length){
         res.status(400).send({message: "User alreay Exits"})
         return
     }

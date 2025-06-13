@@ -34,16 +34,19 @@ app.post('/signup',async (req , res) => {
     if(result.rows?.length){
         res.status(400).send({message: "User alreay Exits With This Email"})
         return
-    }
+    };
     let addQurey = "INSERT INTO users(first_name, last_name, email, password) VALUES($1, $2, $3, $4)"
     let addValues = [firstName , lastName , email, password]
-    let addUsers = await db.query(addQurey, addValues) 
-    res.status(200).send({message: "testing", results: addUsers})
+    // let addUsers = await db.query(addQurey, addValues) 
+    const salt = bcrypt.genSaltSync(10);
+    console.log(salt)
+    // res.status(200).send({message: "testing", results: addUsers})
     } catch (error) {
         res.status(400).send({message: "internel server error"})
         console.log(error)
     }
-})
+});
+
 app.listen(5004, () => {
     console.log("server Is running 5004")
 })

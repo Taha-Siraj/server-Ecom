@@ -1,12 +1,14 @@
 import express from "express";
 import db from "./db.js";
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 // import cors from "cors";
 
 // app.use(cors());
 const app = express();
 app.use(express.json());
 
+let SECRET = process.env.SECRET_key; 
 
 app.get("/", async (req, res) => {
     try {
@@ -65,17 +67,31 @@ app.post('/login', async (req , res) => {
         res.status(404).send({message: "User Already Created Account with this email"})
         return
      }
-     let isMatched = bcrypt.compareSync(password, result.rows[0].password); // true
+     let isMatched = bcrypt.compareSync(password, result.rows[0].password); 
      if(!isMatched){
         res.status(401).send({message: "Wrong password"});
         return;
      };
-
+     let token = jwt.sign({ 
+        id: result.rows[0].user_id,
+        first_name: result.rows[0].first_name,
+        last_name: result.rows[0].last_name,
+        email: result.rows[0].email,
+        user_role: result.rows[0].user_role,
+        iat: Math.floor(Date.now() / 1000),
+        exp: Math.floor(Date.now() / 1000 ) + (60 * 60 * 24)  
+      }, SECRET);
+      console.log("token", token)
+      res.cookie('Token', token, {
+        maxAge: 86400, 
+        httpOnly: true,
+        secure: true,
+      })
      const {password: _p, ...savePassword } = result.rows[0];
-       res.status(200).send({ message: "Login successful", user: savePassword });
+    res.status(200).send({ message: "Login successful", user: savePassword });
     } catch (error) {
-        console.error("Login Error:", error.message);
-    res.status(500).send({ message: "Server error" });
+      console.error("Login Error:", error.message);
+      res.status(500).send({ message: "Server error" });
     }
     
 });

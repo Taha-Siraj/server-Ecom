@@ -87,8 +87,8 @@ app.post('/login', async (req , res) => {
         httpOnly: true,
         secure: true,
       })
-     const {password: _p, ...savePassword } = result.rows[0];
-     res.status(200).send({ message: "Login successful", user: savePassword });
+     const {password: _p, ...users } = result.rows[0];
+     res.status(200).send({ message: "Login successful", user: users });
     } catch (error) {
       console.error("Login Error:", error.message);
       res.status(500).send({ message: "Server error" });

@@ -70,17 +70,15 @@ app.post('/login', async (req , res) => {
         res.status(401).send({message: "Wrong password"});
         return;
      };
-     
-     const {password: _, ...savePassword  } = result.rows[0];
 
+     const {password: _p, ...savePassword } = result.rows[0];
        res.status(200).send({ message: "Login successful", user: savePassword });
     } catch (error) {
         console.error("Login Error:", error.message);
     res.status(500).send({ message: "Server error" });
     }
     
-})
-
+});
 
 app.listen(5004, () => {
     console.log("server Is running 5004")

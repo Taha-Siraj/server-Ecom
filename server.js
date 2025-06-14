@@ -18,7 +18,7 @@ app.get("/", async (req, res) => {
         res.status(500).send({message: "internel server error"})
     }
 })
-
+// Signup api
 app.post('/signup',async (req , res) => {
     let {firstName , lastName , email , password} = req.body;
     if(!firstName || !lastName || !email || !password){
@@ -49,7 +49,7 @@ app.post('/signup',async (req , res) => {
     }
 });
 
-
+//login Api
 app.post('/login', async (req , res) => {
     let {email , password} = req.body;
     if(!email || !password){
@@ -58,19 +58,25 @@ app.post('/login', async (req , res) => {
     }
     email = email.toLowerCase();
     try {
-     let qurey = "SELECT * FROM users email = &1";
+     let qurey = "SELECT * FROM users WHERE email = $1";
      let value =  [email]
      let result = await db.query(qurey , value);
      if(!result.rows.length){
-        res.send(400).send({message: "User Already Created Account with this email"})
-        return;
+        res.status(404).send({message: "User Already Created Account with this email"})
+        return
      }
      let isMatched = bcrypt.compareSync(password, result.rows[0].password); // true
      if(!isMatched){
         res.status(401).send({message: "Wrong password"});
+        return;
      };
+     
+     const {password: _, ...savePassword  } = result.rows[0];
+
+       res.status(200).send({ message: "Login successful", user: savePassword });
     } catch (error) {
-        
+        console.error("Login Error:", error.message);
+    res.status(500).send({ message: "Server error" });
     }
     
 })

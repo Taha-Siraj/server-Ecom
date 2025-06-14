@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat Application</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for a better chat experience */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar for a cleaner look */
+        #chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-container::-webkit-scrollbar-track {
+            background: #1a202c; /* bg-gray-900 */
+        }
+        #chat-container::-webkit-scrollbar-thumb {
+            background-color: #4a5568; /* bg-gray-600 */
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex flex-col h-screen">
+
+    <!-- Header -->
+    <header class="bg-gray-800 shadow-md p-4 flex items-center justify-between border-b border-gray-700">
+        <div class="flex items-center space-x-3">
+            <svg class="w-8 h-8 text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+            <h1 class="text-xl font-bold">AI Chat Assistant</h1>
+        </div>
+    </header>
+
+    <!-- Chat Messages Container -->
+    <main id="chat-container" class="flex-1 p-4 md:p-6 space-y-6 overflow-y-auto">
+        <!-- AI Welcome Message -->
+        <div class="flex items-start gap-3">
+            <div class="bg-indigo-500 p-2 rounded-full flex-shrink-0">
+                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V7.5a2.25 2.25 0 00-2.25-2.25H7.5A2.25 2.25 0 005.25 7.5v9.75a2.25 2.25 0 002.25 2.25z" />
+                </svg>
+            </div>
+            <div class="bg-gray-700 rounded-lg p-3 max-w-lg">
+                <p class="text-sm">Hello! Main aap ka AI assistant hoon. Main aap ki kya madad kar sakta hoon?</p>
+            </div>
+        </div>
+        <!-- Chat messages will be dynamically added here -->
+    </main>
+
+    <!-- Message Input Form -->
+    <footer class="bg-gray-800 p-4 border-t border-gray-700">
+        <form id="chat-form" class="flex items-center space-x-4">
+            <input type="text" id="message-input" placeholder="Yahan apna message likhain..." autocomplete="off" class="flex-1 bg-gray-700 border border-gray-600 rounded-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow duration-200 text-white">
+            <button type="submit" id="send-button" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold p-3 rounded-full transition-colors duration-200 flex items-center justify-center disabled:bg-indigo-400 disabled:cursor-not-allowed">
+                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                </svg>
+            </button>
+        </form>
+    </footer>
+
+    <script>
+        // DOM element references
+        const chatContainer = document.getElementById('chat-container');
+        const chatForm = document.getElementById('chat-form');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+
+        // Store chat history for context in API calls
+        let chatHistory = [];
+
+        /**
+         * Appends a message to the chat container.
+         * @param {string} text - The message text.
+         * @param {string} sender - Who sent the message ('user' or 'ai').
+         * @returns {HTMLElement} - The created message element.
+         */
+        function addMessage(text, sender) {
+            const messageWrapper = document.createElement('div');
+            const messageBubble = document.createElement('div');
+            const avatar = document.createElement('div');
+            
+            messageWrapper.classList.add('flex', 'items-start', 'gap-3');
+            messageBubble.classList.add('rounded-lg', 'p-3', 'max-w-lg', 'text-sm');
+            messageBubble.textContent = text;
+            
+            avatar.classList.add('p-2', 'rounded-full', 'flex-shrink-0');
+
+            if (sender === 'user') {
+                // User message styles
+                messageWrapper.classList.add('justify-end');
+                messageBubble.classList.add('bg-indigo-600');
+                avatar.classList.add('bg-blue-500');
+                avatar.innerHTML = `<svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>`;
+                messageWrapper.appendChild(messageBubble);
+                messageWrapper.appendChild(avatar);
+            } else {
+                // AI message styles
+                messageWrapper.classList.add('justify-start');
+                messageBubble.classList.add('bg-gray-700');
+                avatar.classList.add('bg-indigo-500');
+                avatar.innerHTML = `<svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V7.5a2.25 2.25 0 00-2.25-2.25H7.5A2.25 2.25 0 005.25 7.5v9.75a2.25 2.25 0 002.25 2.25z" /></svg>`;
+                messageWrapper.appendChild(avatar);
+                messageWrapper.appendChild(messageBubble);
+            }
+
+            chatContainer.appendChild(messageWrapper);
+            // Scroll to the latest message
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            return messageBubble;
+        }
+
+        /**
+         * Shows or hides the AI typing indicator.
+         * @param {boolean} show - Whether to show or hide the indicator.
+         */
+        function showTypingIndicator(show) {
+            let typingIndicator = document.getElementById('typing-indicator');
+            if (show) {
+                if (!typingIndicator) {
+                    const indicatorWrapper = document.createElement('div');
+                    indicatorWrapper.id = 'typing-indicator';
+                    indicatorWrapper.classList.add('flex', 'items-start', 'gap-3', 'justify-start');
+                    indicatorWrapper.innerHTML = `
+                        <div class="bg-indigo-500 p-2 rounded-full flex-shrink-0">
+                           <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V7.5a2.25 2.25 0 00-2.25-2.25H7.5A2.25 2.25 0 005.25 7.5v9.75a2.25 2.25 0 002.25 2.25z" /></svg>
+                        </div>
+                        <div class="bg-gray-700 rounded-lg p-3 max-w-lg flex items-center space-x-1">
+                            <span class="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style="animation-delay: 0s;"></span>
+                            <span class="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style="animation-delay: 0.2s;"></span>
+                            <span class="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style="animation-delay: 0.4s;"></span>
+                        </div>
+                    `;
+                    chatContainer.appendChild(indicatorWrapper);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }
+            } else {
+                if (typingIndicator) {
+                    typingIndicator.remove();
+                }
+            }
+        }
+        
+        /**
+         * Handles the chat form submission.
+         * @param {Event} e - The form submission event.
+         */
+        async function handleChatSubmit(e) {
+            e.preventDefault();
+            const userMessage = messageInput.value.trim();
+
+            if (!userMessage) return;
+
+            // Add user message to UI and history
+            addMessage(userMessage, 'user');
+            // Add user's message to history for context
+            chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
+            messageInput.value = '';
+
+            // Show typing indicator and disable input
+            showTypingIndicator(true);
+            messageInput.disabled = true;
+            sendButton.disabled = true;
+
+            try {
+                // ** IMPORTANT / ZAROORI **
+                // API Key yahan daal di gayi hai.
+                // AIzaSyB2dRkiHStU2dC5yKKGh6evI4gAP91CIwk
+                const apiKey = "AIzaSyB2dRkiHStU2dC5yKKGh6evI4gAP91CIwk"; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                if (apiKey === "YOUR_API_KEY_HERE") {
+                    addMessage("Error: Please add your API Key in the script.", 'ai');
+                    showTypingIndicator(false);
+                    messageInput.disabled = false;
+                    sendButton.disabled = false;
+                    return;
+                }
+
+                const payload = {
+                    // Pass the conversation history for context
+                    contents: chatHistory,
+                     generationConfig: {
+                        temperature: 0.7,
+                        topP: 1,
+                        topK: 1,
+                    },
+                };
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    throw new Error(`API request failed with status ${response.status}: ${errorBody}`);
+                }
+
+                const result = await response.json();
+                
+                let aiResponseText = "Maaf, mujhe jawab nahi mila. Dobara koshish karain.";
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                     aiResponseText = result.candidates[0].content.parts[0].text;
+                } else {
+                     console.warn("Unexpected API response structure:", result);
+                }
+
+                // Add AI response to history for context in future messages
+                chatHistory.push({ role: "model", parts: [{ text: aiResponseText }] });
+                addMessage(aiResponseText, 'ai');
+
+            } catch (error) {
+                console.error("Error fetching AI response:", error);
+                addMessage(`Error: ${error.message}. Tafseelat ke liye console check karain.`, 'ai');
+            } finally {
+                // Clean up UI
+                showTypingIndicator(false);
+                messageInput.disabled = false;
+                sendButton.disabled = false;
+                messageInput.focus();
+            }
+        }
+
+        // Event listener for the form submission
+        chatForm.addEventListener('submit', handleChatSubmit);
+
+    </script>
+</body>
+</html>

@@ -4,10 +4,14 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import "dotenv/config";
 import cors from "cors";
-
+import cookieParser from "cookie-parser";
 const app = express();
+app.use(cors({
+  origin: 'http://localhost:5173', 
+  credentials: true              
+}));
 app.use(express.json());
-app.use(cors());
+app.use(cookieParser());
 
 let SECRET = process.env.SECRET_key; 
 
@@ -57,7 +61,7 @@ app.post('/signup',async (req , res) => {
 app.post('/login', async (req , res) => {
     let {email , password} = req.body;
     if(!email || !password){
-        res.status(400).send({message: "All Field Requried"});
+     res.status(400).send({message: "All Field Requried"});
       return;
     }
     email = email.toLowerCase();
@@ -66,7 +70,7 @@ app.post('/login', async (req , res) => {
      let value =  [email]
      let result = await db.query(qurey , value);
      if(!result.rows.length){
-        res.status(404).send({message: "User Already Created Account with this email"})
+        res.status(404).send({message: "User not found"})
         return
      }
      let isMatched = bcrypt.compareSync(password, result.rows[0].password); 
@@ -85,9 +89,9 @@ app.post('/login', async (req , res) => {
       }, SECRET);
       console.log("token", token)
       res.cookie('Token', token, {
-        maxAge: 86400, 
+        maxAge: 86400 * 1000, 
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === 'production',
       })
      const {password: _p, ...users } = result.rows[0];
      res.status(200).send({ message: "Login successful", user: users });

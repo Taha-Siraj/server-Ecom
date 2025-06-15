@@ -2,6 +2,8 @@ import express from "express";
 import db from "./db.js";
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import "dotenv/config";
+
 // import cors from "cors";
 
 // app.use(cors());

@@ -3,12 +3,11 @@ import db from "./db.js";
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import "dotenv/config";
+import cors from "cors";
 
-// import cors from "cors";
-
-// app.use(cors());
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 let SECRET = process.env.SECRET_key; 
 
@@ -23,6 +22,7 @@ app.get("/", async (req, res) => {
     }
 })
 // Signup api
+
 app.post('/signup',async (req , res) => {
     let {firstName , lastName , email , password} = req.body;
     if(!firstName || !lastName || !email || !password){

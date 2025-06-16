@@ -6,27 +6,24 @@ import "dotenv/config";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 const app = express();
-app.use(cors({
-  origin: 'http://localhost:5173', 
-  credentials: true              
-}));
+
+app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
-
 let SECRET = process.env.SECRET_key; 
 
 app.get("/", async (req, res) => {
     try {
         let result = await db.query("SELECT * FROM users")
-        res.status(200).send({message: result});
+        res.status(200).send({message: result.rows});
         console.log(result)
     } catch (error) {
         console.log(error);
         res.status(500).send({message: "internel server error"})
     }
 })
-// Signup api
 
+// Signup api
 app.post('/signup',async (req , res) => {
     let {firstName , lastName , email , password} = req.body;
     if(!firstName || !lastName || !email || !password){
@@ -50,7 +47,6 @@ app.post('/signup',async (req , res) => {
     let addValues = [firstName , lastName , email, hash]
     let addUsers = await db.query(addQurey, addValues) 
     res.status(200).send({message: "User Created", users: addUsers})
-    // console.log(salt, hash)
     } catch (error) {
         res.status(400).send({message: "internel server error"})
         console.log(error)
@@ -87,11 +83,10 @@ app.post('/login', async (req , res) => {
         iat: Math.floor(Date.now() / 1000),
         exp: Math.floor(Date.now() / 1000 ) + (60 * 60 * 24)  
       }, SECRET);
-      console.log("token", token)
       res.cookie('Token', token, {
         maxAge: 86400 * 1000, 
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: true,
       })
      const {password: _p, ...users } = result.rows[0];
      res.status(200).send({ message: "Login successful", user: users });

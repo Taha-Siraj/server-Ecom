@@ -8,9 +8,10 @@ import cookieParser from "cookie-parser";
 const app = express();
 
 app.use(cors({
-  origin: 'http://localhost:5173', 
+  origin: 'https://e-com-phi-nine.vercel.app', 
   credentials: true
 }));
+
 app.use(express.json());
 app.use(cookieParser());
 let SECRET = process.env.SECRET_key; 

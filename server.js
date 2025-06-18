@@ -8,10 +8,9 @@ import cookieParser from "cookie-parser";
 const app = express();
 
 app.use(cors({
-  origin: 'https://e-com-phi-nine.vercel.app', 
-  credentials: true
+  origin: ['https://e-com-phi-nine.vercel.app', 'http://localhost:5173'], 
+  credentials: true 
 }));
-
 app.use(express.json());
 app.use(cookieParser());
 let SECRET = process.env.SECRET_key; 
@@ -84,7 +83,7 @@ app.post('/login', async (req , res) => {
         iat: Math.floor(Date.now() / 1000),
         exp: Math.floor(Date.now() / 1000 ) + (60 * 60 * 24)  
       }, SECRET);
-      res.cookie('Token', token, {
+      res.cookie('token', token, {
         maxAge: 86400 * 1000, 
         httpOnly: true,
         secure: true,
@@ -98,6 +97,15 @@ app.post('/login', async (req , res) => {
     
 });
 
+// logout Api
+app.post("/logout", (req, res) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    sameSite: "none",
+    secure: true
+  })
+  res.status(200).send({message: "User Logout"});
+})
 app.listen(5004, () => {
     console.log("server Is running 5004")
 })

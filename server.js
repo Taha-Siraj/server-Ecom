@@ -15,13 +15,13 @@ app.use(express.json());
 app.use(cookieParser());
 let SECRET = process.env.SECRET_key; 
 
-app.get("/", async (req, res) => {
-    try { 
-        res.status(200).send({message: "Login Signup / Api"});
-    } catch (error) {
-        res.status(500).send({message: "internel server error"})
-    }
-})
+// app.get("/", async (req, res) => {
+//     try { 
+//         res.status(200).send({message: "Login Signup / Api"});
+//     } catch (error) {
+//         res.status(500).send({message: "internel server error"})
+//     }
+// })
 
 // Signup api
 app.post('/signup',async (req , res) => {
@@ -105,6 +105,15 @@ app.post("/logout", (req, res) => {
     secure: true
   })
   res.status(200).send({message: "User Logout"});
+});
+
+app.get("/", async(req, res) => {
+  try {
+    let ressult = await db.query('SELECT * FROM categories');
+    res.status(200).send({message: ressult})
+  } catch (error) {
+    console.log(error)
+  }
 })
 app.listen(5004, () => {
     console.log("server Is running 5004")

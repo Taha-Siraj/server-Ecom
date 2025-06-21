@@ -137,6 +137,16 @@ app.post("/products", async(req , res) => {
 
 
 // category Api
+
+app.get("/allcategories", async(req, res) => {
+  try {
+    let ressult = await db.query('SELECT * FROM categories');
+    res.status(200).send(ressult.rows)
+  } catch (error) {
+    console.log(error)
+  }
+});
+
 app.post("/category", async(req, res) => {
   let {categoryName , description} = req.body;
   if(!categoryName || !description){

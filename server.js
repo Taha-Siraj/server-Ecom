@@ -107,14 +107,31 @@ app.post("/logout", (req, res) => {
   res.status(200).send({message: "User Logout"});
 });
 
+// products Api
 app.get("/", async(req, res) => {
   try {
     let ressult = await db.query('SELECT * FROM categories');
-    res.status(200).send({message: ressult})
+    res.status(200).send({message: ressult.rows})
   } catch (error) {
     console.log(error)
   }
 })
+app.post("/category", async(req, res) => {
+  let {categoryName , description} = req.body;
+  if(!categoryName || !description){
+    res.status(404).send({message: "All field Requried"});
+    return
+  }
+ try {
+  let qurey = 'INSERT INTO categories(category_name , description) VALUES ($1, $2)';
+  let value = [categoryName , description];
+    let ressult = await db.query(qurey, value);
+    res.status(200).send({message: ressult.rows})
+  } catch (error) {
+    console.log(error)
+  } 
+})
+  
 app.listen(5004, () => {
     console.log("server Is running 5004")
 })

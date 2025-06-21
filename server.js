@@ -147,6 +147,7 @@ app.get("/allcategories", async(req, res) => {
   }
 });
 
+
 app.post("/category", async(req, res) => {
   let {categoryName , description} = req.body;
   if(!categoryName || !description){

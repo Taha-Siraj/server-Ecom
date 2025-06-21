@@ -151,12 +151,12 @@ app.post("/category", async(req, res) => {
   let {categoryName , description} = req.body;
   if(!categoryName || !description){
     res.status(404).send({message: "All field Requried"});
-    return
+    return;
   }
  try {
-  let qurey = 'INSERT INTO categories(category_name , description) VALUES ($1, $2)';
+  let qureys = 'INSERT INTO categories(category_name , description) VALUES ($1, $2)';
   let value = [categoryName , description];
-    let ressult = await db.query(qurey, value);
+    let ressult = await db.query(qureys, value);
     res.status(200).send({message: ressult.rows})
   } catch (error) {
     console.log(error)

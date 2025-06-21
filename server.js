@@ -110,12 +110,32 @@ app.post("/logout", (req, res) => {
 // products Api
 app.get("/", async(req, res) => {
   try {
-    let ressult = await db.query('SELECT * FROM categories');
-    res.status(200).send({message: ressult.rows})
+    let ressult = await db.query('SELECT * FROM products');
+    res.status(200).send(ressult.rows)
   } catch (error) {
     console.log(error)
   }
+});
+
+app.post("/products", async(req , res) => {
+   const {productName , price , description , productImg, categoryId} = req.body;
+   if(!productName || !price || !description || !productImg || !categoryId){
+    res.status(400).send({message: "All Field Requried"});
+    return;
+   }
+
+   try {
+    let query = 'INSERT INTO products(product_name , price , description, product_img, category_id) VALUES($1, $2, $3, $4, $5)';
+    let value = [productName, price , description , productImg, categoryId];
+    let ressult = await db.query(query, value);
+    res.status(200).send({message: "Product Added", ressult});  
+   } catch (error) {
+    console.log(error)
+   }
+  
 })
+
+
 app.post("/category", async(req, res) => {
   let {categoryName , description} = req.body;
   if(!categoryName || !description){

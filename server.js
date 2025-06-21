@@ -108,7 +108,7 @@ app.post("/logout", (req, res) => {
 });
 
 // products Api
-app.get("/", async(req, res) => {
+app.get("/allproducts", async(req, res) => {
   try {
     let ressult = await db.query('SELECT * FROM products');
     res.status(200).send(ressult.rows)
@@ -136,6 +136,7 @@ app.post("/products", async(req , res) => {
 })
 
 
+// category Api
 app.post("/category", async(req, res) => {
   let {categoryName , description} = req.body;
   if(!categoryName || !description){

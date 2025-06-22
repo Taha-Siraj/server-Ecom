@@ -110,7 +110,7 @@ app.post("/logout", (req, res) => {
 // products Api
 app.get("/allproducts", async(req, res) => {
   try {
-    let ressult = await db.query('SELECT * FROM products');
+    let ressult = await db.query('SELECT * FROM products ORDER BY product_id DESC');
     res.status(200).send(ressult.rows)
   } catch (error) {
     console.log(error)

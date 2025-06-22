@@ -158,7 +158,32 @@ app.post("/category", async(req, res) => {
   let qureys = 'INSERT INTO categories(category_name , description) VALUES ($1, $2)';
   let value = [categoryName , description];
     let ressult = await db.query(qureys, value);
-    res.status(200).send({message: ressult.rows})
+    res.status(200).send({message: "Added category",  date: ressult})
+  } catch (error) {
+    res.status(404).send({message: "internel server error"})
+    console.log(error)
+  } 
+});
+
+app.put("/category/:id", async(req, res) => {
+  let {categoryName , description} = req.body;
+  let {id} = req.params;
+   if(!categoryName || !description){
+    res.status(404).send({message: "All field Requried"});
+    return;
+  }
+ try {
+  let qureys = 'UPDATED categories SET category_name = $1, description = $2 WHERE category_id = $3';
+  let value = [categoryName , description];
+    let ressult = await db.query(qureys, value, id);
+    
+    if (result.rowCount === 0) {
+      return res.status(404).send({ message: "Category not found" });
+    }
+    res.status(200).send({
+      message: "Category updated successfully",
+      data: result.rows[0],
+      })
   } catch (error) {
     console.log(error)
   } 

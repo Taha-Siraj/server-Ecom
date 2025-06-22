@@ -130,8 +130,9 @@ app.post("/products", async(req , res) => {
     let ressult = await db.query(query, value);
     res.status(200).send({message: "Product Added", ressult});  
    } catch (error) {
+    res.status(404).send({message: "internel Server error"})
     console.log(error)
-   }
+  }
   
 });
 
@@ -141,6 +142,7 @@ app.get("/allcategories", async(req, res) => {
     res.status(200).send(ressult.rows)
   } catch (error) {
     console.log(error)
+    res.status(404).send({message: "internel Server error"})
   }
 });
 
@@ -151,8 +153,8 @@ app.post("/category", async(req, res) => {
     res.status(404).send({message: "All field Requried"});
     return;
   }
- try {
-  let qureys = 'INSERT INTO categories(category_name , description) VALUES ($1, $2)';
+  try {
+    let qureys = 'INSERT INTO categories(category_name , description) VALUES ($1, $2)';
   let value = [categoryName , description];
     let ressult = await db.query(qureys, value);
     res.status(200).send({message: "Added category",  date: ressult})
@@ -166,15 +168,15 @@ app.put("/category/:id", async(req, res) => {
   let {categoryName , description} = req.body;
   let {id} = req.params;
    if(!categoryName || !description){
-    res.status(404).send({message: "All field Requried"});
-    return;
-  }
+     res.status(404).send({message: "All field Requried"});
+     return;
+    }
  try {
   let qureys = 'UPDATED categories SET category_name = $1, description = $2 WHERE category_id = $3';
   let value = [categoryName , description];
     let ressult = await db.query(qureys, value, id);
     
-    if (result.rowCount === 0) {
+    if (ressult.rowCount === 0) {
       return res.status(404).send({ message: "Category not found" });
     }
     res.status(200).send({
@@ -182,10 +184,12 @@ app.put("/category/:id", async(req, res) => {
       data: result.rows[0],
       })
   } catch (error) {
+      res.status(404).send({message: "internel Server error"})
     console.log(error)
   } 
 })
   
+  
 app.listen(5004, () => {
-    console.log("server Is running 5004")
+    console.log("server Is running 5004");
 })

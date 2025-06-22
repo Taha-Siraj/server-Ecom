@@ -133,10 +133,7 @@ app.post("/products", async(req , res) => {
     console.log(error)
    }
   
-})
-
-
-// category Api
+});
 
 app.get("/allcategories", async(req, res) => {
   try {

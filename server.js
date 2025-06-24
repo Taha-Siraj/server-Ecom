@@ -11,6 +11,7 @@ app.use(cors({
   origin: ['https://e-com-phi-nine.vercel.app', 'http://localhost:5173'], 
   credentials: true 
 }));
+
 app.use(express.json());
 app.use(cookieParser());
 let SECRET = process.env.SECRET_key; 

@@ -111,7 +111,7 @@ app.post("/logout", (req, res) => {
 // products Api
 app.get("/allproducts", async(req, res) => {
   try {
-    let ressult = await db.query('SELECT * FROM products ORDER BY product_id DESC');
+    let ressult = await db.query(`SELECT p.product_id, p.product_name, p.price, p.product_img, p.description, p.created_at, c.category_name FROM products AS p INNER JOIN categories c ON p.category_id = c.category_id`);
     res.status(200).send(ressult.rows)
   } catch (error) {
     console.log(error)

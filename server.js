@@ -173,11 +173,10 @@ app.put("/category/:id", async(req, res) => {
      return;
     }
  try {
-  let qureys = 'UPDATED categories SET category_name = $1, description = $2 WHERE category_id = $3';
-  let value = [categoryName , description];
-    let ressult = await db.query(qureys, value, id);
-    
-    if (ressult.rowCount === 0) {
+  let qureys = 'UPDATE categories SET category_name = $1, description = $2 WHERE category_id = $3';
+  let value = [categoryName , description, id];
+    let result = await db.query(qureys, value);
+    if (result.rowCount === 0) {
       return res.status(404).send({ message: "Category not found" });
     }
     res.status(200).send({
@@ -185,11 +184,22 @@ app.put("/category/:id", async(req, res) => {
       data: result.rows[0],
       })
   } catch (error) {
-      res.status(404).send({message: "internel Server error"})
+    res.status(500).send({message: "internel Server error"})
     console.log(error)
   } 
+});
+
+app.delete('/deletedcategory/:id', async (req, res) => {
+  let {id} = req.params;
+  let qures = 'delete from categories where category_id = $1';
+  try {
+    let delRes = await db.query(qures, [id]);
+    res.status(201).send({message: "category deleted"})  
+  } catch (error) {
+    res.status(400).send({message: "category not deleted"}) 
+    console.log(error) 
+  }
 })
-  
 app.listen(5004, () => {
     console.log("server Is running 5004");
 })

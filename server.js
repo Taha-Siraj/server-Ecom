@@ -137,6 +137,37 @@ app.post("/products", async(req , res) => {
   
 });
 
+app.put("/product/:id", (req , res) => {
+    const {productName , price , description , productImg, categoryId} = req.body;
+    let {id} = req.params;
+   if(!productName || !price || !description || !productImg || !categoryId){
+    res.status(400).send({message: "All Field Requried"});
+    return;
+   }
+   try {
+    let qures = 'UPDATE products SET product_name = $1, price = $2, description = $3, product_img = $4, category_id = $5 WHERE product_id = $6';
+    let values = [productName, price, description, productImg, categoryId, id];
+    let result = db.query(qures , values)
+    res.status(201).send({message: "Product updated"})
+   } catch (error) {
+    res.status(500).send({message: "internel server error"})
+    console.log(error)
+   }
+
+})
+
+app.delete("/product/:id", async (req, res) => {
+  let {id} = req.params;
+  try {
+    let result = await db.query('delete from products WHERE product_id = $1', [id]);
+    res.status(201).send({message: "product Deleted"});
+  } catch (error) {
+    res.status(500).send({message: "internel server error"});
+    console.log(error);
+  }
+})
+
+//allcategories Api
 app.get("/allcategories", async(req, res) => {
   try {
     let ressult = await db.query('SELECT * FROM categories');
@@ -179,10 +210,7 @@ app.put("/category/:id", async(req, res) => {
     if (result.rowCount === 0) {
       return res.status(404).send({ message: "Category not found" });
     }
-    res.status(200).send({
-      message: "Category updated successfully",
-      data: result.rows[0],
-      })
+    res.status(200).send({message: "Category updated successfully", })
   } catch (error) {
     res.status(500).send({message: "internel Server error"})
     console.log(error)

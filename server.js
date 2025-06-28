@@ -144,13 +144,12 @@ app.put("/product/:id", (req , res) => {
     res.status(400).send({message: "All Field Requried"});
     return;
    }
-   
    try {
     let qures = 'UPDATE products SET product_name = $1, price = $2, description = $3, product_img = $4, category_id = $5 WHERE product_id = $6';
     let values = [productName, price, description, productImg, categoryName, id];
     let result = db.query(qures , values)
     if (result.rowCount === 0) {
-      return res.status(404).send({ message: "products not found" });
+      return res.status(404).send({ message: "Category not found" });
     }
     res.status(201).send({message: "Product updated"})
    } catch (error) {

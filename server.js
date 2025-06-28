@@ -112,7 +112,7 @@ app.post("/logout", (req, res) => {
 app.get("/allproducts", async(req, res) => {
   try {
     let ressult = await db.query(`SELECT p.product_id, p.product_name, p.price, p.product_img, p.description, p.created_at, c.category_name FROM products AS p INNER JOIN categories c ON p.category_id = c.category_id`);
-    res.status(200).send(ressult.rows)
+    res.status(200).send(ressult)
   } catch (error) {
     console.log(error)
   }
@@ -138,15 +138,15 @@ app.post("/products", async(req , res) => {
 });
 
 app.put("/product/:id", (req , res) => {
-    const {productName , price , description , productImg, categoryId} = req.body;
+    const {productName , price , description , productImg, categoryName} = req.body;
     let {id} = req.params;
-   if(!productName || !price || !description || !productImg || !categoryId){
+   if(!productName || !price || !description || !productImg || !categoryName){
     res.status(400).send({message: "All Field Requried"});
     return;
    }
    try {
     let qures = 'UPDATE products SET product_name = $1, price = $2, description = $3, product_img = $4, category_id = $5 WHERE product_id = $6';
-    let values = [productName, price, description, productImg, categoryId, id];
+    let values = [productName, price, description, productImg, categoryName, id];
     let result = db.query(qures , values)
     res.status(201).send({message: "Product updated"})
    } catch (error) {

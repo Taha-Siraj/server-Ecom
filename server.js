@@ -181,7 +181,6 @@ app.get("/allcategories", async(req, res) => {
   }
 });
 
-
 app.post("/category", async(req, res) => {
   let {categoryName , description} = req.body;
   if(!categoryName || !description){
@@ -231,6 +230,7 @@ app.delete('/deletedcategory/:id', async (req, res) => {
     console.log(error) 
   }
 })
+
 app.listen(5004, () => {
     console.log("server Is running 5004");
 })

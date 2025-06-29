@@ -173,7 +173,7 @@ app.delete("/product/:id", async (req, res) => {
 //allcategories Api
 app.get("/allcategories", async(req, res) => {
   try {
-    let ressult = await db.query('SELECT * FROM categories');
+    let ressult = await db.query('SELECT * FROM categories ORDER BY category_id DESC');
     res.status(200).send(ressult.rows)
   } catch (error) {
     console.log(error)

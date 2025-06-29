@@ -149,7 +149,7 @@ app.put("/product/:id", (req , res) => {
     let values = [productName, price, description, productImg, categoryId, id];
     let result = db.query(qures , values)
     if (result.rowCount === 0) {
-      return res.status(404).send({ message: "Category not found" });
+      return res.status(404).send({ message: "Products not found" });
     }
     res.status(201).send({message: "Product updated"})
    } catch (error) {

@@ -5,8 +5,8 @@ import jwt from 'jsonwebtoken';
 import "dotenv/config";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-const app = express();
 
+const app = express();
 app.use(cors({
   origin: ['https://e-com-phi-nine.vercel.app', 'http://localhost:5173'], 
   credentials: true 
@@ -16,13 +16,6 @@ app.use(express.json());
 app.use(cookieParser());
 let SECRET = process.env.SECRET_key; 
 
-// app.get("/", async (req, res) => {
-//     try { 
-//         res.status(200).send({message: "Login Signup / Api"});
-//     } catch (error) {
-//         res.status(500).send({message: "internel server error"})
-//     }
-// })
 
 // Signup api
 app.post('/signup',async (req , res) => {
@@ -97,6 +90,32 @@ app.post('/login', async (req , res) => {
     }
     
 });
+
+
+
+app.use((req, res, next) => {
+  const token = req.cookies?.token;
+  if (!token) {
+    res.status(401).send({ message: "Unauthorized" });
+    return;
+  }
+
+  jwt.verify(token, SECRET, (err, decodedData) => {
+    if (err) {
+      res.clearCookie("token", {
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+      });
+      return res.status(401).send({ message: "Invalid or expired token" });
+    }
+
+    console.log("✅ Decoded JWT data:", decodedData);
+    req.user = decodedData; // ✅ Fix ho gaya
+    next();
+  });
+});
+
 
 // logout Api
 app.post("/logout", (req, res) => {
@@ -197,7 +216,7 @@ app.post("/category", async(req, res) => {
     console.log(error)
   } 
 });
-
+-
 app.put("/category/:id", async(req, res) => {
   let {categoryName , description} = req.body;
   let {id} = req.params;

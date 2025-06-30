@@ -92,8 +92,33 @@ app.post('/login', async (req , res) => {
 });
 
 
+const verifyUser = (req, res, next) => {
+  const token = req.cookies?.token;
+  if (!token) {
+    return res.status(401).send({ message: "Unauthorized" });
+  }
 
+  jwt.verify(token, SECRET, (err, decodedData) => {
+    if (err) {
+      res.clearCookie("token", {
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+      });
+      return res.status(401).send({ message: "Invalid or expired token" });
+    }
 
+    req.user = decodedData;
+    next();
+  });
+};
+
+app.get("/verify-user", verifyUser, (req, res) => {
+  res.status(200).send({
+    message: "User Verified",
+    user: req.user,
+  });
+});
 
 // logout Api
 app.post("/logout", (req, res) => {

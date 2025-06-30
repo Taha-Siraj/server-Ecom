@@ -80,6 +80,7 @@ app.post('/login', async (req , res) => {
       res.cookie('token', token, {
         maxAge: 86400 * 1000, 
         httpOnly: true,
+        sameSite: "none",
         secure: true,
       })
      const {password: _p, ...users } = result.rows[0];
@@ -107,7 +108,6 @@ const verifyUser = (req, res, next) => {
       });
       return res.status(401).send({ message: "Invalid or expired token" });
     }
-
     req.user = decodedData;
     next();
   });

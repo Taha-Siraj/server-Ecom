@@ -15,7 +15,7 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 let SECRET = process.env.SECRET_key; 
-
+const isDev = process.env.NODE_ENV !== "production";
 
 // Signup api
 app.post('/signup',async (req , res) => {
@@ -80,8 +80,8 @@ app.post('/login', async (req , res) => {
       res.cookie('token', token, {
         maxAge: 86400 * 1000, 
         httpOnly: true,
-        sameSite: "none",
-        secure: true,
+        secure: !isDev, // ✅ localhost = false, production = true
+        sameSite: isDev ? "lax" : "none",
       })
      const {password: _p, ...users } = result.rows[0];
      res.status(200).send({ message: "Login successful", user: users });
@@ -94,20 +94,18 @@ app.post('/login', async (req , res) => {
 
 
 const verifyUser = (req, res, next) => {
+  console.log("👉 COOKIES:", req.cookies); // 🔍 ye zaroor lagao
   const token = req.cookies?.token;
+
   if (!token) {
-    return res.status(401).send({ message: "Unauthorized" });
+    return res.status(401).send({ message: "Unauthorized (No token)" });
   }
 
   jwt.verify(token, SECRET, (err, decodedData) => {
     if (err) {
-      res.clearCookie("token", {
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-      });
-      return res.status(401).send({ message: "Invalid or expired token" });
+      return res.status(401).send({ message: "Invalid token" });
     }
+
     req.user = decodedData;
     next();
   });

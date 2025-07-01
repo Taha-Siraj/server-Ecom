@@ -68,6 +68,7 @@ app.post('/login', async (req , res) => {
         res.status(401).send({message: "Wrong password"});
         return;
      };
+     
      let token = jwt.sign({ 
         id: result.rows[0].user_id,
         first_name: result.rows[0].first_name,

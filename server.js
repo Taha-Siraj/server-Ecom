@@ -80,8 +80,8 @@ app.post('/login', async (req , res) => {
       res.cookie('token', token, {
         maxAge: 86400 * 1000, 
         httpOnly: true,
-        secure: !isDev, // ✅ localhost = false, production = true
-        sameSite: isDev ? "lax" : "none",
+        secure: true, 
+        sameSite: "none"
       })
      const {password: _p, ...users } = result.rows[0];
      res.status(200).send({ message: "Login successful", user: users });

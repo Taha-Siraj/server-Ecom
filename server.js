@@ -93,30 +93,6 @@ app.post('/login', async (req , res) => {
 });
 
 
-const verifyUser = (req, res, next) => {
-  console.log("👉 COOKIES:", req.cookies); // 🔍 ye zaroor lagao
-  const token = req.cookies?.token;
-
-  if (!token) {
-    return res.status(401).send({ message: "Unauthorized (No token)" });
-  }
-
-  jwt.verify(token, SECRET, (err, decodedData) => {
-    if (err) {
-      return res.status(401).send({ message: "Invalid token" });
-    }
-
-    req.user = decodedData;
-    next();
-  });
-};
-
-app.get("/verify-user", verifyUser, (req, res) => {
-  res.status(200).send({
-    message: "User Verified",
-    user: req.user,
-  });
-});
 
 // logout Api
 app.post("/logout", (req, res) => {

@@ -77,12 +77,12 @@ app.post('/login', async (req , res) => {
         iat: Math.floor(Date.now() / 1000),
         exp: Math.floor(Date.now() / 1000 ) + (60 * 60 * 24)  
       }, SECRET);
-      res.cookie('token', token, {
-        maxAge: 86400 * 1000, 
+        res.cookie('token', token, {
+        maxAge: 86400 * 1000,
         httpOnly: true,
-        secure: true, 
-        sameSite: "none"
-      })
+        secure: true,     
+        sameSite: "none" 
+      });
      const {password: _p, ...users } = result.rows[0];
      res.status(200).send({ message: "Login successful", user: users });
     } catch (error) {
@@ -92,7 +92,24 @@ app.post('/login', async (req , res) => {
     
 });
 
+const verifyUser = (req, res, next) => {
+  const token = req.cookies?.token; 
+  if (!token) {
+    return res.status(401).send({ message: 'Unauthorized - No token' });
+  }
 
+  jwt.verify(token, process.env.SECRET_key, (err, decoded) => {
+    if (err) {
+      return res.status(403).send({ message: 'Invalid token' });
+    }
+    req.user = decoded;
+    next(); 
+  });
+};
+
+app.get("/me", verifyUser, (req, res) => {
+  res.status(200).send({ message: "User still logged in", user: req.user });
+});
 
 // logout Api
 app.post("/logout", (req, res) => {

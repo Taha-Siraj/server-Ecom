@@ -74,9 +74,10 @@ app.post('/login', async (req , res) => {
         last_name: result.rows[0].last_name,
         email: result.rows[0].email,
         user_role: result.rows[0].user_role,
-        iat: Math.floor(Date.now() / 1000),
-        exp: Math.floor(Date.now() / 1000 ) + (60 * 60 * 24)  
-      }, SECRET);
+        phone: result.rows[0].phone,
+        profile: result.rows[0].profile,
+        created_at: result.rows[0].created_at,
+      }, SECRET, {expiresIn: "1d"});
         res.cookie('token', token, {
         maxAge: 86400 * 1000,
         httpOnly: true,

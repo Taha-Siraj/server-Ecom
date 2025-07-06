@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import axios from 'axios';
 import { Toaster, toast } from 'sonner';
 import { useFormik } from 'formik';
@@ -7,12 +7,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import './signup.css'
+import { GlobalContext } from '../Context/Context';
 
 const Signup = () => {
+    const {state } = useContext(GlobalContext); 
   const [loader, setLoader] = useState(false);
   const navigate = useNavigate();
-  const baseUrl = "http://localhost:5004";
-  // const baseUrl = "https://server-ecom-rho.vercel.app";
+  const baseUrl = state.baseUrl;
   const formik = useFormik({
     initialValues: {
       firstName: "",

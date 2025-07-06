@@ -10,12 +10,12 @@ import gsap from 'gsap';
 import './login.css'
 
 const Login = () => {
-  const { dispatch } = useContext(GlobalContext);
+  const { state, dispatch } = useContext(GlobalContext);
   const [loader, setLoader] = useState(false);
   const navigate = useNavigate();
-  // const baseUrl = 'https://server-ecom-rho.vercel.app';
   
-  const baseUrl = 'http://localhost:5004';
+  const baseUrl = state.baseUrl;
+  console.log(state)
 
   useGSAP(() => {
     gsap.from('#login-form', {

@@ -4,14 +4,17 @@ import axios from 'axios';
 
 export const GlobalContext = createContext(null);
 const initialState = {
-    user: {},
-    isLogin: false,
+  user: {},
+  isLogin: false,
+  baseUrl: 'http://localhost:5004',
+
 };
 export default function ContextProvider({ children }) {
     const [state, dispatch] = useReducer(reducer, initialState);
     
 useEffect(() => {
   const checkLogin = async () => {
+    console.log("Checking baseUrl:", state);
     try {
       const res = await axios.get("http://localhost:5004/me", {
         withCredentials: true,

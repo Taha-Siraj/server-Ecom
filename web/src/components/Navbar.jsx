@@ -27,7 +27,6 @@ const Navbar = () => {
       { title: 'Add Categories', path: '/AddCategories' },
     ]: [])
   ];
-  console.log("state", state?.user?.email)
     const handleLogout = async () => {
       try {
         await axios.post(`${baseUrl}/logout`, {}, { withCredentials: true });

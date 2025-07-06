@@ -13,6 +13,7 @@ app.use(cors({
   credentials: true 
 }));
 
+
 app.use(express.json());
 app.use(cookieParser());
 let SECRET = process.env.SECRET_key; 

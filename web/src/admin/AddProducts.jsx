@@ -1,11 +1,15 @@
 import axios from 'axios';
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom';
 import { toast, Toaster } from 'sonner';
+import { GlobalContext } from '../Context/Context';
 
 const AddProducts = () => {
   // const baseUrl = 'https://server-ecom-rho.vercel.app';
-  const baseUrl = 'http://localhost:5004';
+    const {state } = useContext(GlobalContext); 
+  
+  const baseUrl = state.baseUrl;
+
   
   const [productform, setproductform] = useState({
     productName: "",

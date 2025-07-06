@@ -5,10 +5,11 @@ import jwt from 'jsonwebtoken';
 import "dotenv/config";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import path from  'path'; 
 
 const app = express();
 app.use(cors({
-  origin: ['https://e-com-phi-nine.vercel.app', 'http://localhost:5173'], 
+  origin: true, 
   credentials: true 
 }));
 
@@ -246,6 +247,11 @@ app.delete('/deletedcategory/:id', async (req, res) => {
     console.log(error) 
   }
 })
+
+
+const __dirname = path.resolve()
+app.use('/', express.static(path.join(__dirname, './web/dist')))
+app.use("/*splat" , express.static(path.join(__dirname, './web/dist')))
 
 app.listen(5004, () => {
     console.log("server Is running 5004");

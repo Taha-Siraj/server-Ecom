@@ -253,7 +253,3 @@ app.delete('/deletedcategory/:id', async (req, res) => {
 const __dirname = path.resolve()
 app.use('/', express.static(path.join(__dirname, './web/dist')))
 app.use("/*splat" , express.static(path.join(__dirname, './web/dist')))
-
-app.listen(5004, () => {
-    console.log("server Is running 5004");
-})

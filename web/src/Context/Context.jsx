@@ -6,7 +6,7 @@ export const GlobalContext = createContext(null);
 const initialState = {
   user: {},
   isLogin: false,
-  baseUrl: 'http://localhost:5004',
+  baseUrl: '/api',
 
 };
 export default function ContextProvider({ children }) {
@@ -14,9 +14,9 @@ export default function ContextProvider({ children }) {
     
 useEffect(() => {
   const checkLogin = async () => {
-    console.log("Checking baseUrl:", state);
+    const baseUrl =  '/api'
     try {
-      const res = await axios.get("http://localhost:5004/me", {
+      const res = await axios.get(`${baseUrl}/me`, {
         withCredentials: true,
       });     
       console.log(res.data)

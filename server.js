@@ -70,8 +70,6 @@ app.post('/login', async (req , res) => {
         res.status(401).send({message: "Wrong password"});
         return;
      };
-
-     
      let token = jwt.sign({ 
         id: result.rows[0].user_id,
         first_name: result.rows[0].first_name,
@@ -84,8 +82,6 @@ app.post('/login', async (req , res) => {
       }, SECRET, {expiresIn: "1d"});
         res.cookie('token', token, {
         maxAge: 86400 * 1000,
-        httpOnly: true,
-        secure: true,     
         sameSite: "none" 
       });
      const {password: _p, ...users } = result.rows[0];

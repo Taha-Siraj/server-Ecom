@@ -9,7 +9,7 @@ import path from  'path';
 
 const app = express();
 app.use(cors({
-  origin: 'https://e-com-git-main-taha-sirajs-projects.vercel.app',
+  origin: 'https://e-com-phi-nine.vercel.app',
   credentials: true 
 }));
 

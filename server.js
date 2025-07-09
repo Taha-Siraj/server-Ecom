@@ -9,7 +9,7 @@ import path from  'path';
 
 const app = express();
 app.use(cors({
-  origin: 'http://localhost:5173', 
+  origin: ['https://e-com-git-main-taha-sirajs-projects.vercel.app', 'http://localhost:5173'], 
   credentials: true 
 }));
 
@@ -85,7 +85,7 @@ app.post('/login', async (req , res) => {
         res.cookie('token', token, {
         maxAge: 86400 * 1000,
         httpOnly: true,
-        secure: !isDev ? true : false,     
+        secure: true,     
         sameSite: "none" 
       });
      const {password: _p, ...users } = result.rows[0];

@@ -82,6 +82,9 @@ app.post('/login', async (req , res) => {
       }, SECRET, {expiresIn: "1d"});
         res.cookie('token', token, {
         maxAge: 86400 * 1000,
+        httpOnly: true,
+        secure: true,     
+        sameSite: "none" 
       });
      const {password: _p, ...users } = result.rows[0];
      res.status(200).send({ message: "Login successful", user: users });

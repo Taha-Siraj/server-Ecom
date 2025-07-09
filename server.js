@@ -97,12 +97,21 @@ app.post('/login', async (req , res) => {
     
 });
 
+// logout Api
+app.post("/logout", (req, res) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    sameSite: "none",
+    secure: true
+  })
+  res.status(200).send({message: "User Logout"});
+});
+
 const verifyUser = (req, res, next) => {
   const token = req.cookies?.token; 
   if (!token) {
     return res.status(401).send({ message: 'Unauthorized - No token' });
   }
-
   jwt.verify(token, process.env.SECRET_key, (err, decoded) => {
     if (err) {
       return res.status(403).send({ message: 'Invalid token' });
@@ -116,15 +125,8 @@ app.get("/me", verifyUser, (req, res) => {
   res.status(200).send({ message: "User still logged in", user: req.user });
 });
 
-// logout Api
-app.post("/logout", (req, res) => {
-  res.clearCookie('token', {
-    httpOnly: true,
-    sameSite: "none",
-    secure: true
-  })
-  res.status(200).send({message: "User Logout"});
-});
+
+
 
 // products Api
 app.get("/allproducts", async(req, res) => {

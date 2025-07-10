@@ -9,7 +9,7 @@ import path from  'path';
 
 const app = express();
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: ['http://localhost:5173', 'https://e-com-phi-nine.vercel.app'],
   credentials: true 
 }));
 
@@ -261,6 +261,7 @@ app.get('/cart/:user_id', async (req, res) => {
     
   }
 })
+
 
 app.post('/cart', async (req, res) => {
   let {user_id, product_id, quantity ,price_per_item} = req.body;

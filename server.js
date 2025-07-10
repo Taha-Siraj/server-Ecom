@@ -9,7 +9,7 @@ import path from  'path';
 
 const app = express();
 app.use(cors({
-  origin: ['https://e-com-phi-nine.vercel.app', 'https://esh0p.netlify.app'],
+  origin: 'http://localhost:5173',
   credentials: true 
 }));
 
@@ -105,8 +105,6 @@ app.post("/logout", (req, res) => {
   res.status(200).send({message: "User Logout"});
 });
 
-
-
 const verifyUser = (req, res, next) => {
   const token = req.cookies?.token; 
   if (!token) {
@@ -124,9 +122,6 @@ const verifyUser = (req, res, next) => {
 app.get("/me", verifyUser, (req, res) => {
   res.status(200).send({ message: "User still logged in", user: req.user });
 });
-
-
-
 
 // products Api
 app.get("/allproducts", async(req, res) => {
@@ -248,6 +243,41 @@ app.delete('/deletedcategory/:id', async (req, res) => {
   } catch (error) {
     res.status(400).send({message: "category not deleted"}) 
     console.log(error) 
+  }
+})
+
+//cart Api
+
+app.get('/cart/:user_id', async (req, res) => {
+  let {user_id} = req.params;
+  try {
+    let qurey = 'SELECT * FROM cart WHERE user_id = $1';
+    let value = [user_id];
+    let response = await db.query(qurey , value);
+    res.status(200).send({ cartItems: response.rows });
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({message: "internel server error"})
+    
+  }
+})
+
+app.post('/cart', async (req, res) => {
+  let {user_id, product_id, quantity ,price_per_item} = req.body;
+  if(!user_id || !product_id || !quantity || !price_per_item){
+    res.status(400).send({message: "Allfield Requried"});
+    return
+  }
+  try {
+    let qurey = `INSERT INTO cart( user_id , product_id , quantity , price_per_item)
+     VALUES($1, $2, $3, $4) RETURNING *`;
+    let values = [user_id , product_id , quantity ,price_per_item];
+    let response = await db.query(qurey , values);
+    res.status(201).send({message: "Item added to cart", cartItems: response.rows[0]});
+  } catch (error) {
+    console.error("Error adding to cart:", error);
+    res.status(500).send({message: "internel server error", });
+    
   }
 })
 
